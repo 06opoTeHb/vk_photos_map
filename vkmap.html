@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vkmap</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster-src.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://raw.githubusercontent.com/python-visualization/folium/master/folium/templates/leaflet.awesome.rotate.css"/>
+
+
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            }
+
+        #map {
+            position:absolute;
+            top:0;
+            bottom:0;
+            right:0;
+            left:0;
+            }
+
+    </style>
+
+
+    <style> #map_eb9cd92a1a604e0988862ad65a51b519 {
+        position : relative;
+        width : 100.0%;
+        height: 100.0%;
+        left: 0.0%;
+        top: 0.0%;
+        }
+
+    </style>
+
+
+</head>
+<body>
+    <div class="folium-map" id="map_eb9cd92a1a604e0988862ad65a51b519" ></div>
+    <script>
+        var southWest = L.latLng(-90, -180);
+        var northEast = L.latLng(90, 180);
+        var bounds = L.latLngBounds(southWest, northEast);
+
+        var map = L.map('map_eb9cd92a1a604e0988862ad65a51b519', {
+                                       center:[59.943082, 30.296922],
+                                       zoom: 12,
+                                       maxBounds: bounds,
+                                       layers: [],
+                                       crs: L.CRS.EPSG3857
+                                     });
+
+        var tile_layer_ce4a40f6add442449c4e3b335321d9d9 = L.tileLayer(
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                maxZoom: 18,
+                minZoom: 1,
+                <!--attribution: 'Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',-->
+                detectRetina: false
+                }
+            ).addTo(map);
+
+
+
+
+        var socket = null;
+        var isopen = false;
+
+        window.onload = function() {
+
+        socket = new WebSocket("ws://localhost:8888/ws");
+        socket.binaryType = "arraybuffer"
+        socket.onopen = function() {
+           console.log("Connected!");
+           isopen = true;
+        }
+
+        var buffer = new Set();
+
+
+        socket.onmessage = function(e) {
+           if (typeof e.data == "string") {
+              var post = JSON.parse(e.data);
+              <!--console.log("Text message received: " + post);-->
+              <!--buffer.add(post._id);-->
+
+              console.log(post.lat + " " +  post.long + " " + post.photo_url);
+              var marker = L.marker([post.lat, post.long],{ icon: new L.Icon.Default() }).addTo(map);
+              <!--marker.setIcon(L.icon( {iconUrl: post.photo_url, iconSize: [20,20]} ));-->
+              marker.bindPopup(post.text + '<br> <a href='+post.url+' target="_blank"> <img width="500 height="500" src='+ post.photo_url +'> </a>', { maxWidth: "auto"}).openPopup();
+           }
+        }
+
+        socket.onclose = function(e) {
+           console.log("Connection closed.");
+           socket = null;
+           isopen = false;
+        }
+       };
+
+
+    </script>
+
+</body>
+</html>
