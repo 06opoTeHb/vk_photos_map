@@ -31,12 +31,14 @@ class Post:
                     sizes = list(filter(lambda p: p.startswith('photo'), a['photo'].keys()))
                     maxsize = max(list(map(lambda p: int(p.replace("photo_", '')), sizes)))
                     data['photo_url'] = a['photo']['photo_' + str(maxsize)]
+                    data['photo_url_75'] = a['photo']['photo_75']
                     break
 
         if 'photo_75' in data.keys():
             sizes = list(filter(lambda p: p.startswith('photo'), data.keys()))
             maxsize = max(list(map(lambda p: int(p.replace("photo_", '')), sizes)))
             data['photo_url'] = data['photo_' + str(maxsize)]
+            data['photo_url_75'] = data['photo_75']
 
 
 clients = set()

@@ -67,17 +67,11 @@
                                        crs: L.CRS.EPSG3857
                                      });
 
-        var tile_layer_ce4a40f6add442449c4e3b335321d9d9 = L.tileLayer(
-            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            {
-                maxZoom: 18,
-                minZoom: 1,
-                <!--attribution: 'Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',-->
-                detectRetina: false
-                }
-            ).addTo(map);
-
-
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
 
 
         var socket = null;
@@ -85,26 +79,22 @@
 
         window.onload = function() {
 
-        socket = new WebSocket("ws://192.168.0.61:8888/ws");
+        socket = new WebSocket("ws://192.168.0.65:8888/ws");
         socket.binaryType = "arraybuffer"
         socket.onopen = function() {
            console.log("Connected!");
            isopen = true;
         }
 
-        var buffer = new Set();
-
-
         socket.onmessage = function(e) {
            if (typeof e.data == "string") {
               var post = JSON.parse(e.data);
-              <!--console.log("Text message received: " + post);-->
-              <!--buffer.add(post._id);-->
 
               console.log(post.lat + " " +  post.long + " " + post.photo_url);
               var marker = L.marker([post.lat, post.long],{ icon: new L.Icon.Default() }).addTo(map);
-              <!--marker.setIcon(L.icon( {iconUrl: post.photo_url, iconSize: [20,20]} ));-->
-              marker.bindPopup(post.text + '<br> <a href='+post.url+' target="_blank"> <img width="500 height="500" src='+ post.photo_url +'> </a>', { maxWidth: "auto"}).openPopup();
+              marker.setIcon(L.icon( {iconUrl: post.photo_url_75, iconSize: [20,20]} ));
+              marker.bindPopup(post.text + '<br> <a href='+post.url+' target="_blank"> <img width="500 height="500" src='+ post.photo_url +'> </a>',
+               { maxWidth: "auto"});
            }
         }
 
