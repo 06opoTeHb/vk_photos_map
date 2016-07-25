@@ -28,11 +28,16 @@ class Post:
         if 'attachments' in data.keys():
             for a in data['attachments']:
                 if a['type'] == 'photo':
-                    sizes = list(filter(lambda p: p.startswith('photo'), a['photo'].keys()))
-                    maxsize = max(list(map(lambda p: int(p.replace("photo_", '')), sizes)))
-                    data['photo_url'] = a['photo']['photo_' + str(maxsize)]
-                    data['photo_url_75'] = a['photo']['photo_75']
-                    break
+                    if 'photo_807' in a['photo'].keys():
+                        data['photo_url'] = a['photo']['photo_807']
+                        data['photo_url_75'] = a['photo']['photo_75']
+                        break
+                    else:
+                        sizes = list(filter(lambda p: p.startswith('photo'), a['photo'].keys()))
+                        maxsize = max(list(map(lambda p: int(p.replace("photo_", '')), sizes)))
+                        data['photo_url'] = a['photo']['photo_' + str(maxsize)]
+                        data['photo_url_75'] = a['photo']['photo_75']
+                        break
 
         if 'photo_75' in data.keys():
             sizes = list(filter(lambda p: p.startswith('photo'), data.keys()))
@@ -47,6 +52,7 @@ to_unixtime = lambda datetime_: int(time.mktime(datetime_.timetuple()))
 
 
 def stream_new_posts():
+
     q = {'date': {'$gte': to_unixtime(datetime.today())}}
 
     time.sleep(5)

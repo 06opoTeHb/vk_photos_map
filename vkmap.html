@@ -5,6 +5,8 @@
     <title>vkmap</title>
 
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -35,7 +37,14 @@
             bottom:0;
             right:0;
             left:0;
+          	height: 100%;
+
             }
+        p {
+            max-width: 500px;
+            background-color: yellow;
+        }
+
 
     </style>
 
@@ -79,7 +88,7 @@
 
         window.onload = function() {
 
-        socket = new WebSocket("ws://192.168.0.65:8888/ws");
+        socket = new WebSocket("ws://192.168.0.61:8888/ws");
         socket.binaryType = "arraybuffer"
         socket.onopen = function() {
            console.log("Connected!");
@@ -92,8 +101,8 @@
 
               console.log(post.lat + " " +  post.long + " " + post.photo_url);
               var marker = L.marker([post.lat, post.long],{ icon: new L.Icon.Default() }).addTo(map);
-              marker.setIcon(L.icon( {iconUrl: post.photo_url_75, iconSize: [20,20]} ));
-              marker.bindPopup(post.text + '<br> <a href='+post.url+' target="_blank"> <img width="500 height="500" src='+ post.photo_url +'> </a>',
+              marker.setIcon(L.icon( {iconUrl: post.photo_url_75, iconSize: [30,30]} ));
+              marker.bindPopup('<p>'+post.text+'</p> <br> <a href='+post.url+' target="_blank"> <img width="500 height="500" src='+ post.photo_url +'> </a>',
                { maxWidth: "auto"});
            }
         }
